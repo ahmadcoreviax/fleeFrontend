@@ -1,9 +1,33 @@
-import Image from "next/image";
+import FAQ from "./Components/FAQ";
+import FeaturedCars from "./Components/FeaturedCars";
+import Features from "./Components/Features";
+import FinalCTABanner from "./Components/FinalCTA";
+import Footer from "./Components/Footer";
+import Hero from "./Components/Hero";
+import HowItWorks from "./Components/HowItWorks";
+import PricingPlans from "./Components/PricingPlan";
+import Testimonials from "./Components/Testimonials";
+import WhyChoose from "./Components/WhyChoose";
 
-export default function Home() {
+const { default: Header } = require("./Components/Header");
+
+export default function Page() {
   return (
     <>
-      <h1 className="text-5xl px-[60px] py-[100px]">Hallo this is txet</h1>
+      <Header />
+
+      <main>
+        <Hero />
+        <Features />
+        <FeaturedCars />
+        <WhyChoose />
+        <HowItWorks />
+        <Testimonials />
+        <PricingPlans />
+        <FAQ />
+        <FinalCTABanner />
+      </main>
+      <Footer />
     </>
   );
 }

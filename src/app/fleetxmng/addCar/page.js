@@ -352,7 +352,7 @@ export default function CarForm() {
 
         <button
           type="submit"
-          disabled={loading}
+          // disabled={loading}
           className="w-full bg-[#e81828] text-white font-bold py-2 px-4 rounded-xl hover:bg-red-700 transition"
         >
           {loading ? "Adding ..." : "Add Car"}
