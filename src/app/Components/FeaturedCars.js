@@ -2,8 +2,9 @@
 
 import { motion } from "framer-motion";
 import Image from "next/image";
-import { Gauge, Users, Fuel, Calendar } from "lucide-react";
-
+import { Gauge, Users, Fuel, Calendar, Check } from "lucide-react";
+import { useEffect, useState } from "react";
+import getReq from "../Utilities/getReq";
 const cars = [
   {
     name: "Tesla Model 3",
@@ -50,6 +51,19 @@ const cars = [
 ];
 
 export default function FeaturedCars() {
+  const [featuredCars, setFeaturedCars] = useState([]);
+  async function getFeaturedCars() {
+    try {
+      let result = await getReq("api/getFeaturedCars");
+      console.log(result.response?.cars);
+      setFeaturedCars(result.response?.cars);
+    } catch (error) {
+      console.log("error in fetching featured cars", error);
+    }
+  }
+  useEffect(() => {
+    getFeaturedCars();
+  }, []);
   return (
     <section id="fleet" className="py-16 px-4 bg-[#0e1111]">
       <div className="container mx-auto">
@@ -62,83 +76,85 @@ export default function FeaturedCars() {
         </p>
 
         <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-          {cars.map((car, i) => (
-            <motion.div
-              key={car.name}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-              viewport={{ once: true }}
-              className="rounded-xl overflow-hidden bg-white/5 border border-white/10 hover:border-[#e81828]/40 hover:shadow-lg hover:shadow-[#e81828]/20 transition"
-            >
-              {/* Car Image */}
-              <div className="relative h-48">
-                <Image
-                  src={car.img}
-                  alt={car.name}
-                  fill
-                  unoptimized
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0e1111]/80 to-transparent" />
-              </div>
-
-              {/* Car Info */}
-              <div className="p-5">
-                <h3 className="text-xl font-semibold">{car.name}</h3>
-
-                {/* Pricing */}
-                <div className="mt-3 text-sm space-y-1">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-[#e81828]" /> Daily:{" "}
-                    <span className="text-[#e81828] font-medium">
-                      {car.prices.daily}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-[#e81828]" /> Weekly:{" "}
-                    <span className="text-[#e81828] font-medium">
-                      {car.prices.weekly}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-[#e81828]" /> Monthly:{" "}
-                    <span className="text-[#e81828] font-medium">
-                      {car.prices.monthly}
-                    </span>
-                  </div>
+          {Array.isArray(featuredCars) &&
+            featuredCars.length > 0 &&
+            featuredCars?.map((car, i) => (
+              <motion.div
+                key={car?._id}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+                viewport={{ once: true }}
+                className="rounded-xl overflow-hidden bg-white/5 border border-white/10 hover:border-[#e81828]/40 hover:shadow-lg hover:shadow-[#e81828]/20 transition"
+              >
+                {/* Car Image */}
+                <div className="relative h-48">
+                  <Image
+                    src={car?.carImages[0]?.url}
+                    alt={car?.name}
+                    fill
+                    unoptimized
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0e1111]/80 to-transparent" />
                 </div>
 
-                {/* Specs */}
-                <div className="mt-4 flex flex-wrap gap-3 text-sm text-white/70">
-                  {car.specs.map((s) => (
-                    <span
-                      key={s.label}
-                      className="inline-flex items-center gap-1 px-3 py-1 rounded-lg border border-white/10 bg-white/5"
+                {/* Car Info */}
+                <div className="p-5">
+                  <h3 className="text-xl font-semibold">{car?.name}</h3>
+
+                  {/* Pricing */}
+                  <div className="mt-3 text-sm space-y-1">
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-[#e81828]" /> Daily:{" "}
+                      <span className="text-[#e81828] font-medium">
+                        {car?.perDayCharges} AED
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-[#e81828]" /> Weekly:{" "}
+                      <span className="text-[#e81828] font-medium">
+                        {car?.perWeekCharges} AED
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Calendar className="h-4 w-4 text-[#e81828]" /> Monthly:{" "}
+                      <span className="text-[#e81828] font-medium">
+                        {car?.perMonthCharges} AED
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Specs */}
+                  <div className="mt-4 flex flex-wrap gap-3 text-sm text-white/70">
+                    {car?.details.slice(0, 4)?.map((d, i) => (
+                      <span
+                        key={i}
+                        className="inline-flex items-center gap-1 px-3 py-1 rounded-lg border border-white/10 bg-white/5"
+                      >
+                        <Check className="h-4 w-4 text-[#e81828]" /> {d}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* CTA buttons */}
+                  <div className="mt-5 flex gap-3">
+                    <a
+                      href="#book"
+                      className="flex-1 text-center py-2 rounded-lg bg-[#e81828] hover:bg-[#c41422] transition"
                     >
-                      <s.icon className="h-4 w-4 text-[#e81828]" /> {s.label}
-                    </span>
-                  ))}
+                      Book Now
+                    </a>
+                    <a
+                      href={`/viewCar/${car?.slug}`}
+                      className="flex-1 text-center py-2 rounded-lg border border-white/20 hover:bg-white/10"
+                    >
+                      Details
+                    </a>
+                  </div>
                 </div>
-
-                {/* CTA buttons */}
-                <div className="mt-5 flex gap-3">
-                  <a
-                    href="#book"
-                    className="flex-1 text-center py-2 rounded-lg bg-[#e81828] hover:bg-[#c41422] transition"
-                  >
-                    Book Now
-                  </a>
-                  <a
-                    href="#contact"
-                    className="flex-1 text-center py-2 rounded-lg border border-white/20 hover:bg-white/10"
-                  >
-                    Details
-                  </a>
-                </div>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            ))}
         </div>
       </div>
     </section>

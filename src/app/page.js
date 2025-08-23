@@ -16,7 +16,7 @@ export default function Page() {
     <>
       <Header />
 
-      <main>
+      <main className="pt-20">
         <Hero />
         <Features />
         <FeaturedCars />

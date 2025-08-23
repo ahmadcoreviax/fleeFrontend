@@ -1,50 +1,96 @@
 "use client";
-
-import { motion } from "framer-motion";
-import { Car, Phone, MapPin } from "lucide-react";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Menu, X, Phone, Car } from "lucide-react";
+import Image from "next/image";
 
 export default function Header() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const menuItems = ["Home", "Cars", "Services", "About Us", "Contact"];
+
   return (
-    <motion.header
-      initial={{ y: -20, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ type: "spring", stiffness: 120, damping: 16 }}
-      className="sticky top-0 z-50 bg-[#0e1111]/80 backdrop-blur border-b border-white/10"
-    >
-      <div className="container mx-auto flex items-center justify-between px-4 py-3">
-        <div className="flex items-center gap-2">
-          <Car className="h-6 w-6 text-[#e81828]" />
-          <span className="text-lg font-bold">Fleet X</span>
-        </div>
-        <nav className="hidden md:flex gap-6 text-sm">
-          <a href="#fleet" className="hover:text-[#e81828]">
-            Fleet
-          </a>
-          <a href="#features" className="hover:text-[#e81828]">
-            Features
-          </a>
-          <a href="#pricing" className="hover:text-[#e81828]">
-            Pricing
-          </a>
-          <a href="#contact" className="hover:text-[#e81828]">
-            Contact
-          </a>
+    <header className="fixed top-0 left-0 w-full z-50 bg-[#0e1111]/95 text-white shadow-md">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-6 py-4">
+        {/* Logo */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="flex items-center gap-2 text-xl font-bold"
+        >
+          <Image
+            src={"/fullLogo.png"}
+            alt="fleetx logo"
+            height={150}
+            width={150}
+          />
+        </motion.div>
+
+        {/* Desktop Menu */}
+        <nav className="hidden md:flex gap-8 font-medium">
+          {menuItems.map((item, idx) => (
+            <motion.a
+              key={idx}
+              href="#"
+              whileHover={{ color: "#e81828" }}
+              className="transition-colors"
+            >
+              {item}
+            </motion.a>
+          ))}
         </nav>
-        <div className="flex gap-2">
-          <a
-            href="tel:+92-300-0000000"
-            className="px-3 py-2 text-sm border border-white/20 rounded-lg hover:bg-white/10 flex items-center gap-1"
-          >
-            <Phone className="h-4 w-4" /> Call
-          </a>
-          <a
-            href="#book"
-            className="px-3 py-2 text-sm rounded-lg bg-[#e81828] hover:bg-[#c41422] flex items-center gap-1"
-          >
-            <MapPin className="h-4 w-4" /> Book
-          </a>
-        </div>
+
+        {/* CTA */}
+        <button className="hidden md:flex bg-[#e81828] px-5 py-2 rounded-full font-medium hover:bg-red-600 transition">
+          Book Now
+        </button>
+
+        {/* Mobile Menu Button */}
+        <button
+          className="md:hidden text-white"
+          onClick={() => setIsOpen(!isOpen)}
+        >
+          {isOpen ? <X size={28} /> : <Menu size={28} />}
+        </button>
       </div>
-    </motion.header>
+
+      {/* Mobile Drawer */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ x: "-100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "-100%" }}
+            transition={{ type: "spring", stiffness: 80 }}
+            className="fixed top-0 left-0 h-full w-72 bg-[#0e1111] shadow-lg p-6 z-50"
+          >
+            <div className="flex justify-between items-center mb-8">
+              <span className="text-xl font-bold">FleetX</span>
+              <X
+                size={28}
+                onClick={() => setIsOpen(false)}
+                className="cursor-pointer"
+              />
+            </div>
+            <ul className="flex flex-col gap-6 text-lg font-medium">
+              {menuItems.map((item, idx) => (
+                <li key={idx}>
+                  <a
+                    href="#"
+                    className="hover:text-[#e81828] transition"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    {item}
+                  </a>
+                </li>
+              ))}
+            </ul>
+            <button className="mt-10 w-full bg-[#e81828] py-3 rounded-full font-semibold hover:bg-red-600 transition">
+              Book Now
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </header>
   );
 }

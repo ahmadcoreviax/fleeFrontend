@@ -3,12 +3,22 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { CircleDollarSign, MapPin, Info, HelpCircle } from "lucide-react";
+import {
+  CircleDollarSign,
+  MapPin,
+  Info,
+  HelpCircle,
+  Book,
+  Banknote,
+} from "lucide-react";
 import postReq from "@/app/Utilities/postReq";
+import Image from "next/image";
+import BookingModal from "@/app/Components/BookingModal";
 
 export default function CarDetailsPage() {
   const { slug } = useParams();
   const [car, setCar] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [mainImage, setMainImage] = useState("");
 
   const fetchCar = async () => {
@@ -29,11 +39,11 @@ export default function CarDetailsPage() {
     return (
       <div className="flex justify-center items-center h-screen bg-[#0e1111]">
         <motion.div
-          animate={{ rotate: 360 }}
+          animate={{ scale: 2 }}
           transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
           className="text-[#e81828] text-xl font-semibold"
         >
-          Loading...
+          <Image src={"/icon.png"} alt="fleetx icon" height={200} width={200} />
         </motion.div>
       </div>
     );
@@ -93,9 +103,7 @@ export default function CarDetailsPage() {
           <p className="text-sm text-gray-500">
             License Plate: {car.licensePlate}
           </p>
-          <p className="text-sm text-gray-500">
-            Chasis Number: {car.chasisNumber}
-          </p>
+
           {/* Status + Buttons */}
           <div className="mt-6 flex flex-col sm:flex-row gap-4">
             {/* Buttons */}
@@ -104,10 +112,16 @@ export default function CarDetailsPage() {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 className="flex-1 sm:flex-none bg-[#e81828] text-white font-semibold px-6 py-3 rounded-xl shadow-lg hover:bg-[#c51420] transition"
-                onClick={() => alert("Book Now clicked!")}
+                onClick={() => setIsModalOpen(true)}
               >
-                🚗 Book Now
+                Book Now
               </motion.button>
+
+              <BookingModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                car={car}
+              />
 
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -123,13 +137,13 @@ export default function CarDetailsPage() {
           {/* Charges */}
           <div className="flex flex-wrap gap-4 mt-4">
             <div className="flex items-center gap-2 text-[#e81828]">
-              <CircleDollarSign /> <span>{car.perDayCharges}/day</span>
+              <Banknote /> <span>{car.perDayCharges}/day</span>
             </div>
             <div className="flex items-center gap-2 text-white">
-              <CircleDollarSign /> <span>{car.perWeekCharges}/week</span>
+              <Banknote /> <span>{car.perWeekCharges}/week</span>
             </div>
             <div className="flex items-center gap-2 text-gray-300">
-              <CircleDollarSign /> <span>{car.perMonthCharges}/month</span>
+              <Banknote /> <span>{car.perMonthCharges}/month</span>
             </div>
           </div>
 
@@ -137,21 +151,6 @@ export default function CarDetailsPage() {
           <div className="flex items-center gap-2 mt-4 text-gray-300">
             <MapPin className="text-[#e81828]" /> Available in:{" "}
             {car.availableIn.join(", ")}
-          </div>
-
-          {/* Status */}
-          <div className="mt-4">
-            <span
-              className={`px-3 py-1 rounded-full text-sm font-medium ${
-                car.status === "Available"
-                  ? "bg-green-600/20 text-green-400 border border-green-500/30"
-                  : car.status === "Booked"
-                  ? "bg-yellow-600/20 text-yellow-400 border border-yellow-500/30"
-                  : "bg-red-600/20 text-red-400 border border-red-500/30"
-              }`}
-            >
-              {car.status}
-            </span>
           </div>
         </div>
 
