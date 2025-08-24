@@ -11,11 +11,10 @@ import {
   MapPin,
   Mail,
   Phone,
-  Printer,
-  Clipboard,
   ArrowLeft,
   Clock,
   AlertCircle,
+  PercentIcon,
 } from "lucide-react";
 import postReq from "@/app/Utilities/postReq";
 import toast from "react-hot-toast";
@@ -58,20 +57,6 @@ export default function BookingConfirmationPage() {
     return () => controller.abort();
   }, [id]);
 
-  const handleCopyId = async () => {
-    if (!id) return;
-    try {
-      setCopying(true);
-      await navigator.clipboard.writeText(id);
-      setTimeout(() => setCopying(false), 900);
-    } catch {
-      setCopying(false);
-    }
-  };
-
-  const handlePrint = () => {
-    window.print(); // simple print/receipt
-  };
   const handleDownloadReceipt = async () => {
     const node = document.getElementById("receipt-section");
     if (!node) return;
@@ -217,35 +202,14 @@ export default function BookingConfirmationPage() {
               </p>
 
               <div className="mt-4 flex flex-wrap gap-3">
-                <div className="rounded-md px-3 py-2 bg-[#e81828] text-black font-semibold">
+                <div className="rounded-md px-3 py-2 bg-[#e81828] text-white font-semibold">
                   Booking ID: {bookingNumber}
                 </div>
-
-                <button
-                  onClick={handleCopyId}
-                  className="inline-flex items-center gap-2 px-3 py-2 rounded-md border border-[#e81828]/30 hover:bg-[#e81828]/10 transition"
-                >
-                  <Clipboard className="w-4 h-4 text-[#e81828]" />
-                  {copying ? "Copied" : "Copy ID"}
-                </button>
               </div>
             </div>
 
             {/* summary card small */}
             <div className="w-full md:w-64 bg-[#111214] rounded-xl p-4 border border-[#e81828]/10">
-              <div className="text-sm text-white/70">Status</div>
-              <div
-                className={`mt-1 inline-block px-3 py-1 rounded-full text-sm font-medium ${
-                  status === "Confirmed"
-                    ? "bg-green-600/20 text-green-300 border border-green-400/30"
-                    : status === "Pending"
-                    ? "bg-yellow-600/20 text-yellow-300 border border-yellow-400/30"
-                    : "bg-red-600/20 text-red-300 border border-red-400/30"
-                }`}
-              >
-                {status || "Pending"}
-              </div>
-
               <div className="mt-4 text-sm text-white/70">Booked on</div>
               <div className="mt-1 font-medium">{niceDate(createdAt)}</div>
             </div>
@@ -362,6 +326,13 @@ export default function BookingConfirmationPage() {
             <div className="p-4 rounded-lg bg-[#0f1111] border border-[#e81828]/10">
               <h3 className="text-lg font-semibold text-[#e81828]">Summary</h3>
               <div className="mt-4 space-y-3 text-sm text-white/80">
+                <div className="flex items-center justify-between">
+                  <div>Applied Discount</div>
+                  <div className="font-bold text-lg items-center rounded-full px-2 py-1 bg-[#e81828] flex justify-center">
+                    <PercentIcon className="w-4 h-4 " />
+                    {booking?.carId?.discountedPercentage} —
+                  </div>
+                </div>
                 <div className="flex items-center justify-between">
                   <div>Base price</div>
                   <div className="font-medium">AED {basePrice} —</div>

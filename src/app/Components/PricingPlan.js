@@ -6,22 +6,16 @@ import { Check, Calendar } from "lucide-react";
 const plans = [
   {
     name: "Daily",
-    price: "From PKR 7,500",
-    unit: "/day",
     features: ["Free cancellation (24h)", "150 KM included", "Basic insurance"],
     best: false,
   },
   {
     name: "Weekly",
-    price: "From PKR 49,000",
-    unit: "/week",
     features: ["Priority support", "Flexible mileage", "Full insurance"],
     best: true,
   },
   {
     name: "Monthly",
-    price: "From PKR 180,000",
-    unit: "/month",
     features: ["Best value", "Free concierge pickup", "Damage waiver"],
     best: false,
   },
@@ -36,7 +30,7 @@ export default function PricingPlans() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-3xl md:text-4xl font-bold text-center"
+          className="text-3xl md:text-4xl font-bold text-center text-white"
         >
           Flexible <span className="text-[#e81828]">plans</span> for every trip
         </motion.h2>
@@ -56,26 +50,23 @@ export default function PricingPlans() {
               }`}
             >
               <div className="flex items-center justify-between">
-                <h3 className="text-xl font-semibold">{p.name}</h3>
+                <h3 className="text-xl font-semibold text-white">{p.name}</h3>
                 <Calendar className="h-5 w-5 text-[#e81828]" />
               </div>
-              <div className="mt-3">
-                <span className="text-3xl font-extrabold text-[#e81828]">
-                  {p.price}
-                </span>
-                <span className="text-white/60"> {p.unit}</span>
-              </div>
+
+              {/* features only */}
               <ul className="mt-5 space-y-3 text-white/80">
                 {p.features.map((f) => (
                   <li key={f} className="flex items-start gap-2">
-                    <Check className="h-5 w-5 text-[#e81828] mt-0.5" />{" "}
+                    <Check className="h-5 w-5 text-[#e81828] mt-0.5" />
                     <span>{f}</span>
                   </li>
                 ))}
               </ul>
+
               <a
                 href="#book"
-                className="mt-6 block text-center py-2 rounded-xl bg-[#e81828] hover:bg-[#c41422] transition"
+                className="mt-6 block text-center py-2 rounded-xl bg-[#e81828] hover:bg-[#c41422] transition text-white font-medium"
               >
                 Choose {p.name}
               </a>

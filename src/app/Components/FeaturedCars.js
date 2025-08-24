@@ -5,53 +5,14 @@ import Image from "next/image";
 import { Gauge, Users, Fuel, Calendar, Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import getReq from "../Utilities/getReq";
-const cars = [
-  {
-    name: "Tesla Model 3",
-    img: "https://images.unsplash.com/photo-1511390429071-42e63a123f7c?q=80&w=1600",
-    prices: {
-      daily: "PKR 18,000",
-      weekly: "PKR 110,000",
-      monthly: "PKR 400,000",
-    },
-    specs: [
-      { icon: Gauge, label: "Auto" },
-      { icon: Users, label: "5 seats" },
-      { icon: Fuel, label: "Electric" },
-    ],
-  },
-  {
-    name: "Toyota Corolla",
-    img: "https://images.unsplash.com/photo-1549921296-3a6b5b2eb06b?q=80&w=1600",
-    prices: {
-      daily: "PKR 9,500",
-      weekly: "PKR 60,000",
-      monthly: "PKR 210,000",
-    },
-    specs: [
-      { icon: Gauge, label: "Manual" },
-      { icon: Users, label: "5 seats" },
-      { icon: Fuel, label: "Petrol" },
-    ],
-  },
-  {
-    name: "Kia Sportage",
-    img: "https://images.unsplash.com/photo-1619767886558-efdc259cde1a?q=80&w=1600",
-    prices: {
-      daily: "PKR 14,500",
-      weekly: "PKR 95,000",
-      monthly: "PKR 350,000",
-    },
-    specs: [
-      { icon: Gauge, label: "Auto" },
-      { icon: Users, label: "5 seats" },
-      { icon: Fuel, label: "Diesel" },
-    ],
-  },
-];
+import BookingModal from "./BookingModal";
 
 export default function FeaturedCars() {
   const [featuredCars, setFeaturedCars] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [selectedCar, setSelectedCar] = useState(null);
+
   async function getFeaturedCars() {
     try {
       let result = await getReq("api/getFeaturedCars");
@@ -78,83 +39,147 @@ export default function FeaturedCars() {
         <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
           {Array.isArray(featuredCars) &&
             featuredCars.length > 0 &&
-            featuredCars?.map((car, i) => (
-              <motion.div
-                key={car?._id}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                viewport={{ once: true }}
-                className="rounded-xl overflow-hidden bg-white/5 border border-white/10 hover:border-[#e81828]/40 hover:shadow-lg hover:shadow-[#e81828]/20 transition"
-              >
-                {/* Car Image */}
-                <div className="relative h-48">
-                  <Image
-                    src={car?.carImages[0]?.url}
-                    alt={car?.name}
-                    fill
-                    unoptimized
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0e1111]/80 to-transparent" />
-                </div>
+            featuredCars?.map((car, i) => {
+              const hasDiscount = car.discountedPercentage > 0;
+              const discount = car.discountedPercentage;
 
-                {/* Car Info */}
-                <div className="p-5">
-                  <h3 className="text-xl font-semibold">{car?.name}</h3>
+              const calcDiscount = (price) =>
+                hasDiscount
+                  ? Math.round(price - (price * discount) / 100)
+                  : price;
 
-                  {/* Pricing */}
-                  <div className="mt-3 text-sm space-y-1">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-[#e81828]" /> Daily:{" "}
-                      <span className="text-[#e81828] font-medium">
-                        {car?.perDayCharges} AED
+              const dayPrice = calcDiscount(car.perDayCharges);
+              const weekPrice = calcDiscount(car.perWeekCharges);
+              const monthPrice = calcDiscount(car.perMonthCharges);
+              return (
+                <motion.div
+                  key={car?._id}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  viewport={{ once: true }}
+                  className="rounded-xl overflow-hidden bg-white/5 border border-white/10 hover:border-[#e81828]/40 hover:shadow-lg hover:shadow-[#e81828]/20 transition"
+                >
+                  {/* Car Image */}
+                  <div className="relative h-48">
+                    <Image
+                      src={car?.carImages[0]?.url}
+                      alt={car?.name}
+                      fill
+                      unoptimized
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0e1111]/80 to-transparent" />
+                    {/* Discount Badge */}
+                    {hasDiscount && (
+                      <span className="absolute top-2 left-2 bg-[#e81828] text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                        {discount}% OFF
                       </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-[#e81828]" /> Weekly:{" "}
-                      <span className="text-[#e81828] font-medium">
-                        {car?.perWeekCharges} AED
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Calendar className="h-4 w-4 text-[#e81828]" /> Monthly:{" "}
-                      <span className="text-[#e81828] font-medium">
-                        {car?.perMonthCharges} AED
-                      </span>
-                    </div>
+                    )}
                   </div>
 
-                  {/* Specs */}
-                  <div className="mt-4 flex flex-wrap gap-3 text-sm text-white/70">
-                    {car?.details.slice(0, 4)?.map((d, i) => (
-                      <span
-                        key={i}
-                        className="inline-flex items-center gap-1 px-3 py-1 rounded-lg border border-white/10 bg-white/5"
+                  {/* Car Info */}
+                  <div className="p-5">
+                    <h3 className="text-xl font-semibold">{car?.name}</h3>
+
+                    {/* Pricing */}
+                    {/* Pricing */}
+                    <div className="mt-3 text-sm space-y-1">
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4 text-[#e81828]" /> Daily:{" "}
+                        {hasDiscount ? (
+                          <span className="flex gap-2 items-center">
+                            <span className="line-through text-gray-400">
+                              {car?.perDayCharges} AED
+                            </span>
+                            <span className="text-[#e81828] font-bold">
+                              {dayPrice} AED
+                            </span>
+                          </span>
+                        ) : (
+                          <span className="text-[#e81828] font-medium">
+                            {car?.perDayCharges} AED
+                          </span>
+                        )}
+                      </div>
+                      {/* weekly */}
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4 text-[#e81828]" /> Weekly:{" "}
+                        {hasDiscount ? (
+                          <span className="flex gap-2 items-center">
+                            <span className="line-through text-gray-400">
+                              {car?.perWeekCharges} AED
+                            </span>
+                            <span className="text-[#e81828] font-bold">
+                              {weekPrice} AED
+                            </span>
+                          </span>
+                        ) : (
+                          <span className="text-[#e81828] font-medium">
+                            {car?.perWeekCharges} AED
+                          </span>
+                        )}
+                      </div>
+                      {/* monthly */}
+                      <div className="flex items-center gap-2">
+                        <Calendar className="h-4 w-4 text-[#e81828]" /> Monthly:{" "}
+                        {hasDiscount ? (
+                          <span className="flex gap-2 items-center">
+                            <span className="line-through text-gray-400">
+                              {car?.perMonthCharges} AED
+                            </span>
+                            <span className="text-[#e81828] font-bold">
+                              {monthPrice} AED
+                            </span>
+                          </span>
+                        ) : (
+                          <span className="text-[#e81828] font-medium">
+                            {car?.perMonthCharges} AED
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Specs */}
+                    <div className="mt-4 flex flex-wrap gap-3 text-sm text-white/70">
+                      {car?.details.slice(0, 4)?.map((d, i) => (
+                        <span
+                          key={i}
+                          className="inline-flex items-center gap-1 px-3 py-1 rounded-lg border border-white/10 bg-white/5"
+                        >
+                          <Check className="h-4 w-4 text-[#e81828]" /> {d}
+                        </span>
+                      ))}
+                    </div>
+
+                    {/* CTA buttons */}
+                    <div className="mt-5 flex gap-3">
+                      <a
+                        href="#book"
+                        className="flex-1 text-center py-2 rounded-lg bg-[#e81828] hover:bg-[#c41422] transition"
+                        onClick={() => {
+                          setIsModalOpen(true);
+                          setSelectedCar(car);
+                        }}
                       >
-                        <Check className="h-4 w-4 text-[#e81828]" /> {d}
-                      </span>
-                    ))}
+                        Book Now
+                      </a>
+                      <BookingModal
+                        isOpen={isModalOpen}
+                        onClose={() => setIsModalOpen(false)}
+                        car={selectedCar}
+                      />
+                      <a
+                        href={`/viewCar/${car?.slug}`}
+                        className="flex-1 text-center py-2 rounded-lg border border-white/20 hover:bg-white/10"
+                      >
+                        Details
+                      </a>
+                    </div>
                   </div>
-
-                  {/* CTA buttons */}
-                  <div className="mt-5 flex gap-3">
-                    <a
-                      href="#book"
-                      className="flex-1 text-center py-2 rounded-lg bg-[#e81828] hover:bg-[#c41422] transition"
-                    >
-                      Book Now
-                    </a>
-                    <a
-                      href={`/viewCar/${car?.slug}`}
-                      className="flex-1 text-center py-2 rounded-lg border border-white/20 hover:bg-white/10"
-                    >
-                      Details
-                    </a>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              );
+            })}
         </div>
       </div>
     </section>

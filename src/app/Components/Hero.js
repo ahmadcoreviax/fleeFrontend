@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 export default function Hero() {
   return (
@@ -35,18 +36,16 @@ export default function Hero() {
         </p>
 
         <div className="mt-6 flex flex-col sm:flex-row gap-3">
-          <a
-            href="#book"
-            className="px-6 py-3 rounded-lg bg-[#e81828] hover:bg-[#c41422] flex items-center gap-2 justify-center"
-          >
-            Book Your Ride <ArrowRight className="h-5 w-5" />
-          </a>
-          <a
-            href="#fleet"
+          <span className="px-6 py-3 rounded-lg bg-[#e81828] hover:bg-[#c41422] flex items-center gap-2 justify-center">
+            Book Your Ride With <span className="font-extrabold">FLEET X</span>
+            <ArrowRight className="h-5 w-5" />
+          </span>
+          <Link
+            href="/allCars"
             className="px-6 py-3 rounded-lg border border-white/20 hover:bg-white/10 justify-center flex"
           >
             Explore Fleet
-          </a>
+          </Link>
         </div>
       </div>
     </section>

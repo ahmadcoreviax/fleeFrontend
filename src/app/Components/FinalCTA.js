@@ -24,13 +24,13 @@ export default function FinalCTABanner() {
           </p>
           <div className="mt-6 flex flex-col sm:flex-row gap-3">
             <a
-              href="#contact"
+              href="/contact"
               className="px-5 py-3 rounded-xl border border-white/20 hover:bg-white/10 inline-flex items-center justify-center gap-2"
             >
               <PhoneCall className="h-5 w-5" /> Contact
             </a>
             <a
-              href="#book"
+              href="/allCars"
               className="px-5 py-3 rounded-xl bg-[#e81828] hover:bg-[#c41422] inline-flex items-center justify-center gap-2"
             >
               <CalendarClock className="h-5 w-5" /> Reserve Now

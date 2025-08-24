@@ -1,3 +1,4 @@
+import BrandsSection from "./Components/Brands";
 import FAQ from "./Components/FAQ";
 import FeaturedCars from "./Components/FeaturedCars";
 import Features from "./Components/Features";
@@ -18,7 +19,7 @@ export default function Page() {
 
       <main className="pt-20">
         <Hero />
-        <Features />
+        <BrandsSection />
         <FeaturedCars />
         <WhyChoose />
         <HowItWorks />
