@@ -7,6 +7,7 @@ import { Calendar, Check, SlidersHorizontal, ChevronDown } from "lucide-react";
 import getReq from "../Utilities/getReq";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
+import Link from "next/link";
 
 export default function AllCars() {
   const [cars, setCars] = useState([]);
@@ -256,22 +257,24 @@ export default function AllCars() {
                       className="rounded-xl overflow-hidden bg-white/5 border border-white/10 hover:border-[#e81828]/40 hover:shadow-lg hover:shadow-[#e81828]/20 transition"
                     >
                       {/* Car Image */}
-                      <div className="relative h-48">
-                        <Image
-                          src={car?.carImages[0]?.url}
-                          alt={car?.name}
-                          fill
-                          unoptimized
-                          className="object-cover"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#0e1111]/80 to-transparent" />
-                        {/* Discount Badge */}
-                        {hasDiscount && (
-                          <span className="absolute top-2 left-2 bg-[#e81828] text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
-                            {discount}% OFF
-                          </span>
-                        )}
-                      </div>
+                      <Link href={`/viewCar/${car?.slug}`}>
+                        <div className="relative h-48">
+                          <Image
+                            src={car?.carImages[0]?.url}
+                            alt={car?.name}
+                            fill
+                            unoptimized
+                            className="object-cover"
+                          />
+                          <div className="absolute inset-0 " />
+                          {/* Discount Badge */}
+                          {hasDiscount && (
+                            <span className="absolute top-2 left-2 bg-[#e81828] text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                              {discount}% OFF
+                            </span>
+                          )}
+                        </div>
+                      </Link>
 
                       {/* Car Info */}
                       <div className="p-5">

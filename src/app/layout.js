@@ -1,7 +1,7 @@
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import WAButton from "./Components/WAButton";
-
+import "antd/dist/reset.css";
 const poppins = Poppins({
   variable: "--font-poppins",
   subsets: ["latin"],

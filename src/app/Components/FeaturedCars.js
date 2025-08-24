@@ -6,13 +6,15 @@ import { Gauge, Users, Fuel, Calendar, Check } from "lucide-react";
 import { useEffect, useState } from "react";
 import getReq from "../Utilities/getReq";
 import BookingModal from "./BookingModal";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function FeaturedCars() {
   const [featuredCars, setFeaturedCars] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [selectedCar, setSelectedCar] = useState(null);
-
+  const router = useRouter();
   async function getFeaturedCars() {
     try {
       let result = await getReq("api/getFeaturedCars");
@@ -61,22 +63,24 @@ export default function FeaturedCars() {
                   className="rounded-xl overflow-hidden bg-white/5 border border-white/10 hover:border-[#e81828]/40 hover:shadow-lg hover:shadow-[#e81828]/20 transition"
                 >
                   {/* Car Image */}
-                  <div className="relative h-48">
-                    <Image
-                      src={car?.carImages[0]?.url}
-                      alt={car?.name}
-                      fill
-                      unoptimized
-                      className="object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0e1111]/80 to-transparent" />
-                    {/* Discount Badge */}
-                    {hasDiscount && (
-                      <span className="absolute top-2 left-2 bg-[#e81828] text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
-                        {discount}% OFF
-                      </span>
-                    )}
-                  </div>
+                  <Link href={`/viewCar/${car?.slug}`}>
+                    <div className="relative h-48">
+                      <Image
+                        src={car?.carImages[0]?.url}
+                        alt={car?.name}
+                        fill
+                        unoptimized
+                        className="object-cover"
+                      />
+                      <div className="absolute inset-0 " />
+                      {/* Discount Badge */}
+                      {hasDiscount && (
+                        <span className="absolute top-2 left-2 bg-[#e81828] text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                          {discount}% OFF
+                        </span>
+                      )}
+                    </div>
+                  </Link>
 
                   {/* Car Info */}
                   <div className="p-5">
@@ -154,8 +158,7 @@ export default function FeaturedCars() {
 
                     {/* CTA buttons */}
                     <div className="mt-5 flex gap-3">
-                      <a
-                        href="#book"
+                      <span
                         className="flex-1 text-center py-2 rounded-lg bg-[#e81828] hover:bg-[#c41422] transition"
                         onClick={() => {
                           setIsModalOpen(true);
@@ -163,18 +166,18 @@ export default function FeaturedCars() {
                         }}
                       >
                         Book Now
-                      </a>
+                      </span>
                       <BookingModal
                         isOpen={isModalOpen}
                         onClose={() => setIsModalOpen(false)}
                         car={selectedCar}
                       />
-                      <a
+                      <Link
                         href={`/viewCar/${car?.slug}`}
                         className="flex-1 text-center py-2 rounded-lg border border-white/20 hover:bg-white/10"
                       >
                         Details
-                      </a>
+                      </Link>
                     </div>
                   </div>
                 </motion.div>

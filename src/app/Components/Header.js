@@ -26,12 +26,14 @@ export default function Header() {
           animate={{ opacity: 1, x: 0 }}
           className="flex items-center gap-2 text-xl font-bold"
         >
-          <Image
-            src={"/fullLogo.png"}
-            alt="fleetx logo"
-            height={150}
-            width={150}
-          />
+          <Link className="cursor-pointer" href={"/"}>
+            <Image
+              src={"/fullLogo.png"}
+              alt="fleetx logo"
+              height={150}
+              width={150}
+            />
+          </Link>
         </motion.div>
 
         {/* Desktop Menu */}
@@ -57,9 +59,11 @@ export default function Header() {
         </nav>
 
         {/* CTA */}
-        <button className="hidden md:flex bg-[#e81828] px-5 py-2 rounded-full font-medium hover:bg-red-600 transition">
-          Book Now
-        </button>
+        <Link className="cursor-pointer" href={"/allCars"}>
+          <button className="hidden cursor-pointer md:flex bg-[#e81828] px-5 py-2 rounded-full font-medium hover:bg-red-600 transition">
+            Book Now
+          </button>
+        </Link>
 
         {/* Mobile Menu Button */}
         <button
@@ -81,12 +85,14 @@ export default function Header() {
             className="fixed top-0 left-0 h-full w-72 bg-[#0e1111] shadow-lg p-6 z-50"
           >
             <div className="flex justify-between items-center mb-8">
-              <Image
-                src={"/fullLogo.png"}
-                height={100}
-                width={100}
-                alt="fleetX logo"
-              />
+              <Link className="cursor-pointer" href={"/"}>
+                <Image
+                  src={"/fullLogo.png"}
+                  height={100}
+                  width={100}
+                  alt="fleetX logo"
+                />
+              </Link>
               <X
                 size={28}
                 onClick={() => setIsOpen(false)}
@@ -117,9 +123,11 @@ export default function Header() {
                 );
               })}
             </ul>
-            <button className="mt-10 w-full bg-[#e81828] py-3 rounded-full font-semibold hover:bg-red-600 transition">
-              Book Now
-            </button>
+            <Link className="cursor-pointer" href={"/allCars"}>
+              <button className="mt-10 w-full bg-[#e81828] py-3 rounded-full font-semibold hover:bg-red-600 transition">
+                Book Now
+              </button>
+            </Link>
           </motion.div>
         )}
       </AnimatePresence>
