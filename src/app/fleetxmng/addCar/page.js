@@ -6,14 +6,17 @@ import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import getReq from "@/app/Utilities/getReq";
+import { useRouter } from "next/navigation";
 
 export default function CarForm() {
   const [loading, setLoading] = useState(false);
   const [allBrands, setAllBrands] = useState([]);
   const [allCategories, setAllCategories] = useState([]);
+  const router = useRouter();
   async function getCATANDBRND() {
     try {
       let brdRes = await getReq("api/mng/getAllBrands");
+
       if (brdRes.statusCode == 200) {
         setAllBrands(brdRes.response?.brands);
       }
@@ -121,13 +124,15 @@ export default function CarForm() {
         }
       );
       setLoading(false);
+      if (res.status == 401 || res.status == 403) {
+        return router.push("/fleetxmng");
+      }
       if (!res.ok) toast.error("Some Error Occured");
 
       const result = await res.json();
-
       toast.success(result.msg);
-      // reset();
-      // setSelectedImages([]);
+      reset();
+      setSelectedImages([]);
     } catch (error) {
       setLoading(false);
       console.log(error);

@@ -16,6 +16,7 @@ import {
 import postReq from "@/app/Utilities/postReq";
 import toast, { Toaster } from "react-hot-toast";
 import getReq from "@/app/Utilities/getReq";
+import { useRouter } from "next/navigation";
 
 export default function AddonsPage() {
   const {
@@ -31,6 +32,7 @@ export default function AddonsPage() {
     },
     mode: "onBlur",
   });
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const { fields, append, remove } = useFieldArray({
     control,
@@ -73,6 +75,9 @@ export default function AddonsPage() {
     try {
       let result = await postReq("api/mng/addons/add", { payload });
       setLoading(false);
+      if (result.statusCode == 401 || result.statusCode == 403) {
+        return router.push("/fleetxmng");
+      }
       if (result.statusCode == 200) {
         toast.success(result.response.msg);
       } else {

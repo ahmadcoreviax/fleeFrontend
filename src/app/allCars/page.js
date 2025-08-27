@@ -8,8 +8,10 @@ import getReq from "../Utilities/getReq";
 import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 export default function AllCars() {
+  const searchParams = useSearchParams();
   const [cars, setCars] = useState([]);
   const [brands, setBrands] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -26,6 +28,10 @@ export default function AllCars() {
     minMonth: "",
     maxMonth: "",
   });
+  let queryCategory = searchParams?.get("category");
+  useEffect(() => {
+    setFilters({ ...filters, category: queryCategory });
+  }, [queryCategory]);
 
   async function fetchData() {
     try {
@@ -128,10 +134,10 @@ export default function AllCars() {
                 <h4 className="font-semibold mb-2">Category</h4>
                 <select
                   className="w-full bg-[#0e1111] rounded px-3 py-2"
-                  value={filters.category}
-                  onChange={(e) =>
-                    setFilters({ ...filters, category: e.target.value })
-                  }
+                  value={filters.category || ""}
+                  onChange={(e) => {
+                    setFilters({ ...filters, category: e.target.value });
+                  }}
                 >
                   <option value="">All Categories</option>
                   {categories.map((c) => (

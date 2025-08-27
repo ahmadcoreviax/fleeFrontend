@@ -1,5 +1,6 @@
 "use client";
 import postReq from "@/app/Utilities/postReq";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import toast, { Toaster } from "react-hot-toast";
@@ -7,10 +8,14 @@ import toast, { Toaster } from "react-hot-toast";
 const Page = () => {
   const { register, handleSubmit } = useForm();
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
   async function onSubmit(data) {
     try {
       setLoading(true);
       let result = await postReq("api/mng/addCategory", data);
+      if (result.statusCode == 401 || result.statusCode == 403) {
+        return router.push("/fleetxmng");
+      }
       if (result.statusCode == 200) {
         toast.success(result.response.msg);
       } else {

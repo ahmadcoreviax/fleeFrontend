@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import toast, { Toaster } from "react-hot-toast";
 import getReq from "@/app/Utilities/getReq";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function BookingsPage() {
   const [bookings, setBookings] = useState([]);
@@ -18,10 +19,13 @@ export default function BookingsPage() {
   const [maxPrice, setMaxPrice] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
-
+  const router = useRouter();
   async function getBookings() {
     try {
       let result = await getReq("api/mng/getAllBookings");
+      if (result.statusCode == 401 || result.statusCode == 403) {
+        router.push("/fleetxmng");
+      }
       if (result.statusCode == 200) {
         setBookings(result?.response?.bookings);
         setFilteredBookings(result?.response?.bookings);

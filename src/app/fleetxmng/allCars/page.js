@@ -40,6 +40,9 @@ export default function AdminCarsPage() {
   async function handleDelete(data) {
     try {
       let result = await postReq("api/mng/deleteCar", data);
+      if (result.statusCode == 401 || result.statusCode == 403) {
+        return router.push("/fleetxmng");
+      }
       if (result.statusCode == 200) {
         toast.success(result.response.msg);
       } else {

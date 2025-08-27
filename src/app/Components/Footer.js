@@ -9,6 +9,7 @@ import {
   MapPin,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function Footer() {
   return (
@@ -20,17 +21,19 @@ export default function Footer() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <Image
-            src={"/fullLogo.png"}
-            height={150}
-            width={150}
-            alt="fleetx logo"
-          />
+          <Link href={"/"}>
+            <Image
+              src={"/fullLogo.png"}
+              height={150}
+              width={150}
+              alt="fleetx logo"
+            />
+          </Link>
           {/* <h2 className="text-2xl font-bold mb-4 text-[#e81828]">FleetX</h2> */}
           <p className="text-gray-400 leading-relaxed">
             Premium Rent a Car services with top-class vehicles and hassle-free
             booking. <br />
-            <span className="italic">"Car Rental LLC"</span>
+            <span className="italic">&quot;Car Rental LLC&quot;</span>
           </p>
         </motion.div>
 
@@ -43,24 +46,24 @@ export default function Footer() {
           <h3 className="font-semibold text-lg mb-4">Quick Links</h3>
           <ul className="space-y-2 text-gray-400">
             <li>
-              <a href="#" className="hover:text-[#e81828]">
+              <Link href={"/"} className="hover:text-[#e81828]">
                 Home
-              </a>
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-[#e81828]">
-                Cars
-              </a>
+              <Link href={"/allCars"} className="hover:text-[#e81828]">
+                All Cars
+              </Link>
             </li>
             <li>
-              <a href="#" className="hover:text-[#e81828]">
-                Services
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:text-[#e81828]">
+              <Link href={"/about"} className="hover:text-[#e81828]">
                 About Us
-              </a>
+              </Link>
+            </li>
+            <li>
+              <Link href={"/contact"} className="hover:text-[#e81828]">
+                Contact Us
+              </Link>
             </li>
           </ul>
         </motion.div>
@@ -71,12 +74,17 @@ export default function Footer() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
         >
-          <h3 className="font-semibold text-lg mb-4">Our Services</h3>
+          <h3 className="font-semibold text-lg mb-4">Our Policies</h3>
           <ul className="space-y-2 text-gray-400">
-            <li>Luxury Cars</li>
-            <li>Corporate Rentals</li>
-            <li>Wedding Packages</li>
-            <li>City Transfers</li>
+            <li>
+              <Link href={"/terms-conditions"}>Terms & Conditions</Link>
+            </li>
+            <li>
+              <Link href={"/privacy-policy"}>Privacy Policy</Link>
+            </li>
+            <li>
+              <Link href={"/refund-policy"}>Refund Policy</Link>
+            </li>
           </ul>
         </motion.div>
 

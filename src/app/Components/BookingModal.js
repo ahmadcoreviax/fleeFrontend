@@ -77,7 +77,7 @@ export default function BookingModal({ isOpen, onClose, car }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex  overflow-y-auto justify-center bg-black/70 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex h-auto  overflow-y-auto justify-center bg-black/70 backdrop-blur-sm"
           onClick={onClose}
         >
           <Toaster />
@@ -87,7 +87,7 @@ export default function BookingModal({ isOpen, onClose, car }) {
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.8, opacity: 0, y: 50 }}
             transition={{ duration: 0.3 }}
-            className="bg-[#0e1111] text-white rounded-2xl p-6 w-[95%] max-w-2xl shadow-2xl border border-[#e81828]/40"
+            className="bg-[#0e1111] text-white rounded-2xl h-[110vh] p-6 w-[95%] max-w-2xl shadow-2xl border border-[#e81828]/40"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}

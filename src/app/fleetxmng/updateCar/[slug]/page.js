@@ -5,14 +5,14 @@ import { Plus, Trash2, Upload, X } from "lucide-react";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
-import { useParams } from "next/navigation"; // 👈 URL params
+import { useParams, useRouter } from "next/navigation"; // 👈 URL params
 import getReq from "@/app/Utilities/getReq";
 import postReq from "@/app/Utilities/postReq";
 
 export default function CarForm() {
   const params = useParams();
   const slug = params?.slug;
-
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [allBrands, setAllBrands] = useState([]);
   const [car, setCar] = useState(null);
@@ -166,6 +166,9 @@ export default function CarForm() {
       );
 
       setLoading(false);
+      if (res.status == 401 || res.status == 403) {
+        return router.push("/fleetxmng");
+      }
       if (!res.ok) {
         toast.error("Update failed");
         return;
