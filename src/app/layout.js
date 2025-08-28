@@ -66,6 +66,7 @@ export default function RootLayout({ children }) {
       <html lang="en">
         <body className={`${poppins.variable} antialiased`}>{children}</body>
         <Script
+          id="schema"
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
