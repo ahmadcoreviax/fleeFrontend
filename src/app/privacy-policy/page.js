@@ -122,7 +122,7 @@ export default function PrivacyPolicy() {
           >
             For any questions, please contact{" "}
             <span className="text-[#e81828] font-semibold">
-              Kohistan Rent a Car Support
+              Fleet X Car Rental Support
             </span>
           </motion.p>
         </section>
