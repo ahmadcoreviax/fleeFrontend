@@ -71,23 +71,24 @@ export default function BookingModal({ isOpen, onClose, car }) {
   };
 
   return (
-    <AnimatePresence>
+    // <AnimatePresence>
+    <main>
       {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-50 flex h-auto  overflow-y-auto justify-center bg-black/70 backdrop-blur-sm"
+        <div
+          // initial={{ opacity: 0 }}
+          // animate={{ opacity: 1 }}
+          // exit={{ opacity: 0 }}
+          className="fixed inset-0 z-50 flex h-auto  overflow-y-auto justify-center bg-black/70"
           onClick={onClose}
         >
           <Toaster />
           {/* Modal Box */}
-          <motion.div
-            initial={{ scale: 0.8, opacity: 0, y: 50 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.8, opacity: 0, y: 50 }}
-            transition={{ duration: 0.3 }}
-            className="bg-[#0e1111] text-white rounded-2xl h-[110vh] p-6 w-[95%] max-w-2xl shadow-2xl border border-[#e81828]/40"
+          <div
+            // initial={{ opacity: 0, y: 20 }}
+            // animate={{ opacity: 1, y: 0 }}
+            // exit={{ opacity: 0, y: 20 }}
+            // transition={{ duration: 0.2, ease: "easeOut" }}
+            className="bg-[#0e1111] text-white rounded-2xl h-[125vh] p-6 w-[95%] max-w-2xl shadow-2xl border border-[#e81828]/40"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
@@ -244,9 +245,11 @@ export default function BookingModal({ isOpen, onClose, car }) {
                 </motion.button>
               </div>
             </form>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
-    </AnimatePresence>
+    </main>
+
+    // </AnimatePresence>
   );
 }

@@ -3,7 +3,7 @@ export default async function postReq(endpoint, data) {
     `${process.env.NEXT_PUBLIC_DOMAIN_URL}/${endpoint}`,
     {
       method: "POST",
-      credentials: "include",
+      // credentials: "include",
       headers: {
         "Content-type": "application/json",
       },

@@ -9,13 +9,21 @@ import Header from "../Components/Header";
 import Footer from "../Components/Footer";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import BookingModal from "../Components/BookingModal";
 
 export default function AllCars() {
   const searchParams = useSearchParams();
   const [cars, setCars] = useState([]);
   const [brands, setBrands] = useState([]);
   const [categories, setCategories] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [selectedCar, setSelectedCar] = useState(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const carsPerPage = 9;
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(true);
 
   // Filters state
   const [filters, setFilters] = useState({
@@ -36,21 +44,26 @@ export default function AllCars() {
   async function fetchData() {
     try {
       // Cars, Brands, Categories alag alag fetch
-      let carRes = await getReq("api/getAllCars");
+      let carRes = await getReq(
+        `api/getAllCars?page=${currentPage}&limit=${carsPerPage}`
+      );
       let brandRes = await getReq("api/mng/getAllBrands");
       let catRes = await getReq("api/mng/getAllCategories");
 
-      setCars(carRes.response || []);
+      setCars(carRes.response?.cars || []);
+      setTotalPages(carRes.response?.totalPages || 1);
       setBrands(brandRes.response?.brands || []);
       setCategories(catRes.response?.categories || []);
     } catch (error) {
       console.log("error fetching data", error);
+    } finally {
+      setLoading(false); // stop loading
     }
   }
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [currentPage]);
 
   // Filter handler
   const filteredCars = cars.filter((car) => {
@@ -82,6 +95,17 @@ export default function AllCars() {
 
     return brandMatch && categoryMatch && dayMatch && weekMatch && monthMatch;
   });
+  const SkeletonCard = () => (
+    <div className="rounded-xl overflow-hidden bg-white/5 border border-white/10 animate-pulse">
+      <div className="h-48 bg-white/10" />
+      <div className="p-5 space-y-3">
+        <div className="h-4 bg-white/10 rounded w-3/4"></div>
+        <div className="h-3 bg-white/10 rounded w-1/2"></div>
+        <div className="h-3 bg-white/10 rounded w-1/4"></div>
+        <div className="h-8 bg-white/10 rounded mt-4"></div>
+      </div>
+    </div>
+  );
 
   return (
     <>
@@ -230,9 +254,26 @@ export default function AllCars() {
             <h2 className="text-3xl font-bold mb-6">
               All <span className="text-[#e81828]">Cars</span>
             </h2>
-
-            {filteredCars.length === 0 ? (
-              <p className="text-gray-400">No cars match your filters.</p>
+            {loading ? (
+              <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-8">
+                {Array.from({ length: carsPerPage }).map((_, i) => (
+                  <SkeletonCard key={i} />
+                ))}
+              </div>
+            ) : (
+              ""
+            )}
+            {!loading && filteredCars?.length === 0 ? (
+              <div className="text-center py-20 text-gray-400">
+                <Image
+                  src="/fullLogo.png"
+                  alt="No Cars"
+                  width={150}
+                  height={150}
+                  className="mx-auto mb-6 opacity-70"
+                />
+                <p className="text-lg font-medium">No Cars Available</p>
+              </div>
             ) : (
               <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-8">
                 {filteredCars.map((car, i) => {
@@ -363,12 +404,21 @@ export default function AllCars() {
 
                         {/* CTA */}
                         <div className="mt-5 flex gap-3">
-                          <a
-                            href="#book"
+                          <span
                             className="flex-1 text-center py-2 rounded-lg bg-[#e81828] hover:bg-[#c41422] transition"
+                            onClick={() => {
+                              setIsModalOpen(true);
+                              setSelectedCar(car);
+                            }}
                           >
                             Book Now
-                          </a>
+                          </span>
+
+                          <BookingModal
+                            isOpen={isModalOpen}
+                            onClose={() => setIsModalOpen(false)}
+                            car={selectedCar}
+                          />
                           <a
                             href={`/viewCar/${car?.slug}`}
                             className="flex-1 text-center py-2 rounded-lg border border-white/20 hover:bg-white/10"
@@ -380,6 +430,39 @@ export default function AllCars() {
                     </motion.div>
                   );
                 })}
+              </div>
+            )}
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex justify-center mt-10 gap-3">
+                <button
+                  disabled={currentPage === 1}
+                  onClick={() => setCurrentPage((p) => p - 1)}
+                  className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-50"
+                >
+                  Prev
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrentPage(i + 1)}
+                    className={`px-4 py-2 rounded-lg ${
+                      currentPage === i + 1
+                        ? "bg-[#e81828] text-white"
+                        : "bg-white/10 hover:bg-white/20"
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+                <button
+                  disabled={currentPage === totalPages}
+                  onClick={() => setCurrentPage((p) => p + 1)}
+                  className="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20 disabled:opacity-50"
+                >
+                  Next
+                </button>
               </div>
             )}
           </div>

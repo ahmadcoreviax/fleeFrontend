@@ -22,6 +22,8 @@ import toast from "react-hot-toast";
 export default function BookingConfirmationPage() {
   const { id } = useParams(); // route: /booking/[id]
   const router = useRouter();
+  const [downloading, setDownloading] = useState(false);
+
   const [booking, setBooking] = useState();
   const [loading, setLoading] = useState(true);
   const [copying, setCopying] = useState(false);
@@ -58,18 +60,37 @@ export default function BookingConfirmationPage() {
   }, [id]);
 
   const handleDownloadReceipt = async () => {
+    setDownloading(true); // 👈 overlay on
     const node = document.getElementById("receipt-section");
     if (!node) return;
 
+    // Puri receipt ko image mein convert karo
     const dataUrl = await toPng(node, { cacheBust: true });
+
     const pdf = new jsPDF("p", "mm", "a4");
     const imgProps = pdf.getImageProperties(dataUrl);
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
 
-    pdf.addImage(dataUrl, "PNG", 0, 0, pdfWidth, pdfHeight);
+    let heightLeft = pdfHeight;
+    let position = 0;
+
+    // Pehla page add karo
+    pdf.addImage(dataUrl, "PNG", 0, position, pdfWidth, pdfHeight);
+    heightLeft -= pdf.internal.pageSize.getHeight();
+
+    // Agar receipt ek page se badi hai toh extra pages add karo
+    while (heightLeft > 0) {
+      position = heightLeft - pdfHeight;
+      pdf.addPage();
+      pdf.addImage(dataUrl, "PNG", 0, position, pdfWidth, pdfHeight);
+      heightLeft -= pdf.internal.pageSize.getHeight();
+    }
+
     pdf.save(`Booking-${booking.bookingNumber}.pdf`);
+    setDownloading(false);
   };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-[#0e1111] text-white flex items-center justify-center p-6">
@@ -86,27 +107,31 @@ export default function BookingConfirmationPage() {
 
   if (error || !booking) {
     return (
-      <div className="min-h-screen bg-[#0e1111] text-white flex items-center justify-center p-6">
-        <motion.div
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="max-w-lg text-center rounded-2xl p-8 bg-[#111314] border border-[#e81828]/20"
-        >
-          <AlertCircle className="mx-auto text-[#e81828] w-14 h-14" />
-          <h2 className="mt-4 text-2xl font-bold">
-            Oops — something went wrong
-          </h2>
-          <p className="mt-2 text-white/70">{error || "Booking not found."}</p>
-          <div className="mt-6 flex justify-center gap-3">
-            <button
-              onClick={() => router.push("/")}
-              className="px-4 py-2 rounded-lg bg-[#e81828] hover:bg-[#c51420] transition"
-            >
-              Back to home
-            </button>
-          </div>
-        </motion.div>
-      </div>
+      <>
+        <div className="min-h-screen bg-[#0e1111] text-white flex items-center justify-center p-6">
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="max-w-lg text-center rounded-2xl p-8 bg-[#111314] border border-[#e81828]/20"
+          >
+            <AlertCircle className="mx-auto text-[#e81828] w-14 h-14" />
+            <h2 className="mt-4 text-2xl font-bold">
+              Oops — something went wrong
+            </h2>
+            <p className="mt-2 text-white/70">
+              {error || "Booking not found."}
+            </p>
+            <div className="mt-6 flex justify-center gap-3">
+              <button
+                onClick={() => router.push("/")}
+                className="px-4 py-2 rounded-lg bg-[#e81828] hover:bg-[#c51420] transition"
+              >
+                Back to home
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      </>
     );
   }
 
@@ -147,252 +172,277 @@ export default function BookingConfirmationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0e1111] text-white p-6 flex items-start justify-center">
-      <div className="w-full max-w-4xl">
-        {/* Top logo / back */}
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <img
-              src="/fullLogo.png"
-              alt="Fleet X"
-              className="h-32 w-32 object-contain"
-            />
-            <div>
-              <div className="text-xl font-bold">Fleet X</div>
-              <div className="text-xs text-white/60">Car Rental LLC</div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => router.push("/")}
-              className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-[#e81828]/30 hover:bg-[#e81828]/10 transition"
-            >
-              <ArrowLeft className="w-4 h-4 text-[#e81828]" />
-              Back to home
-            </button>
-          </div>
+    <>
+      {downloading && (
+        <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center">
+          <motion.img
+            src="/fullLogo.png"
+            alt="Fleet X Logo"
+            initial={{ scale: 1 }}
+            animate={{ scale: [1, 1.1, 1] }}
+            transition={{ duration: 1.5, repeat: Infinity }}
+            className="w-48 h-48 md:w-64 md:h-64 object-contain"
+          />
         </div>
-
-        {/* Hero */}
-        <motion.div
-          initial={{ opacity: 0, y: 10, scale: 0.995 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          id="receipt-section"
-          className="rounded-2xl p-8 bg-gradient-to-b from-[#0f1111]/80 to-[#0e1111] border border-[#e81828]/20 shadow-2xl"
-        >
-          <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-            <div className="flex-none">
-              <div className="w-28 h-28 rounded-full bg-[#0e1111] border-2 border-[#e81828] grid place-items-center shadow-xl">
-                <CheckCircle2 className="w-16 h-16 text-[#e81828]" />
+      )}
+      <div className="min-h-screen bg-[#0e1111] text-white p-6 flex items-start justify-center">
+        <div className="w-full max-w-4xl">
+          {/* Top logo / back */}
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <img
+                src="/fullLogo.png"
+                alt="Fleet X"
+                className="h-32 w-32 object-contain"
+              />
+              <div className="hidden sm:block">
+                <div className="text-xl font-bold">Fleet X</div>
+                <div className="text-xs text-white/60">Car Rental LLC</div>
               </div>
             </div>
 
-            <div className="flex-1">
-              <h1 className="text-3xl md:text-4xl font-extrabold">
-                Booking Confirmed
-              </h1>
-              <p className="mt-2 text-white/70 text-sm max-w-2xl">
-                Thank you{" "}
-                <span className="font-semibold">{name || "Guest"}</span> — your
-                ride is reserved. We’ve emailed the confirmation to{" "}
-                <span className="font-semibold">{email}</span>. Show this
-                confirmation to our agent at pickup. Enjoy the trip!
-              </p>
-
-              <div className="mt-4 flex flex-wrap gap-3">
-                <div className="rounded-md px-3 py-2 bg-[#e81828] text-white font-semibold">
-                  Booking ID: {bookingNumber}
-                </div>
-              </div>
-            </div>
-
-            {/* summary card small */}
-            <div className="w-full md:w-64 bg-[#111214] rounded-xl p-4 border border-[#e81828]/10">
-              <div className="mt-4 text-sm text-white/70">Booked on</div>
-              <div className="mt-1 font-medium">{niceDate(createdAt)}</div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => router.push("/")}
+                className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-[#e81828]/30 hover:bg-[#e81828]/10 transition"
+              >
+                <ArrowLeft className="w-4 h-4 text-[#e81828]" />
+                Back to home
+              </button>
             </div>
           </div>
 
-          {/* Divider */}
-          <div className="mt-8 border-t border-white/6"></div>
-
-          {/* Details grid */}
-          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="p-4 rounded-lg bg-[#0f1111] border border-[#e81828]/10">
-              <h3 className="text-lg font-semibold text-[#e81828]">
-                Pickup & Drop
-              </h3>
-              <div className="mt-3 text-white/80 space-y-1 text-sm">
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-[#e81828]" />
-                  <div>
-                    <div className="text-xs text-white/60">From</div>
-                    <div className="font-medium">{niceDate(fromDate)}</div>
-                  </div>
+          {/* Hero */}
+          <motion.div
+            initial={{ opacity: 0, y: 10, scale: 0.995 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            id="receipt-section"
+            className="rounded-2xl p-8 bg-gradient-to-b from-[#0f1111]/80 to-[#0e1111] border border-[#e81828]/20 shadow-2xl"
+          >
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
+              <div className="flex-none">
+                <div className="w-28 h-28 rounded-full bg-[#0e1111] border-2 border-[#e81828] grid place-items-center shadow-xl">
+                  <CheckCircle2 className="w-16 h-16 text-[#e81828]" />
                 </div>
+              </div>
 
-                <div className="flex items-center gap-2 mt-2">
-                  <Calendar className="w-4 h-4 text-[#e81828]" />
-                  <div>
-                    <div className="text-xs text-white/60">To</div>
-                    <div className="font-medium">{niceDate(toDate)}</div>
-                  </div>
-                </div>
+              <div className="flex-1">
+                <h1 className="text-3xl md:text-4xl font-extrabold">
+                  Booking Confirmed
+                </h1>
+                <p className="mt-2 text-white/70 text-sm max-w-2xl">
+                  Thank you{" "}
+                  <span className="font-semibold">{name || "Guest"}</span> —
+                  your ride is reserved. We’ve emailed the confirmation to{" "}
+                  <span className="font-semibold">{email}</span>. Show this
+                  confirmation to our agent at pickup. Enjoy the trip!
+                </p>
 
-                <div className="flex items-center gap-2 mt-3">
-                  <Clock className="w-4 h-4 text-[#e81828]" />
-                  <div>
-                    <div className="text-xs text-white/60">Preferred time</div>
-                    <div className="font-medium">{preferredTime || "—"}</div>
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <div className="rounded-md px-3 py-2 bg-[#e81828] text-white font-semibold">
+                    Booking ID: {bookingNumber}
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className="p-4 rounded-lg bg-[#0f1111] border border-[#e81828]/10">
-              <h3 className="text-lg font-semibold text-[#e81828]">
-                Contact & Car
-              </h3>
-              <div className="mt-3 text-white/80 space-y-1 text-sm">
-                <div className="flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-[#e81828]" />
-                  <div>
-                    <div className="text-xs text-white/60">Email</div>
-                    <div className="font-medium">{email}</div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 mt-2">
-                  <Phone className="w-4 h-4 text-[#e81828]" />
-                  <div>
-                    <div className="text-xs text-white/60">Phone</div>
-                    <div className="font-medium">{phone}</div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 mt-2">
-                  <MapPin className="w-4 h-4 text-[#e81828]" />
-                  <div>
-                    <div className="text-xs text-white/60">Address</div>
-                    <div className="font-medium">{address}</div>
-                  </div>
-                </div>
-
-                <div className="flex items-center gap-2 mt-2">
-                  <div className="text-xs text-white/60">Car Name</div>
-                  <div className="font-medium">
-                    {booking?.carId?.name || "—"}
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 mt-2">
-                  <div className="text-xs text-white/60">Car License Plate</div>
-                  <div className="font-medium">
-                    {booking?.carId?.licensePlate || "—"}
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 mt-2">
-                  <div className="text-xs text-white/60">Car Color</div>
-                  <div className="font-medium">
-                    {booking?.carId?.color || "—"}
-                  </div>
-                </div>
+              {/* summary card small */}
+              <div className="w-full md:w-64 bg-[#111214] rounded-xl p-4 border border-[#e81828]/10">
+                <div className="mt-4 text-sm text-white/70">Booked on</div>
+                <div className="mt-1 font-medium">{niceDate(createdAt)}</div>
               </div>
             </div>
-          </div>
 
-          {/* Add-ons & Price */}
-          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="p-4 rounded-lg bg-[#0f1111] border border-[#e81828]/10">
-              <h3 className="text-lg font-semibold text-[#e81828]">Add-ons</h3>
-              <div className="mt-3 space-y-2 text-sm text-white/80">
-                {Array.isArray(addons) && addons.length > 0 ? (
-                  addons.map((a) => (
-                    <div
-                      key={a._id || a.name}
-                      className="flex items-center justify-between"
-                    >
-                      <div>{a.name}</div>
-                      <div className="text-white/60">AED {a.price}</div>
+            {/* Divider */}
+            <div className="mt-8 border-t border-white/6"></div>
+
+            {/* Details grid */}
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="p-4 rounded-lg bg-[#0f1111] border border-[#e81828]/10">
+                <h3 className="text-lg font-semibold text-[#e81828]">
+                  Pickup & Drop
+                </h3>
+                <div className="mt-3 text-white/80 space-y-1 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-[#e81828]" />
+                    <div>
+                      <div className="text-xs text-white/60">From</div>
+                      <div className="font-medium">{niceDate(fromDate)}</div>
                     </div>
-                  ))
-                ) : (
-                  <div className="text-white/60">No add-ons selected.</div>
-                )}
+                  </div>
+
+                  <div className="flex items-center gap-2 mt-2">
+                    <Calendar className="w-4 h-4 text-[#e81828]" />
+                    <div>
+                      <div className="text-xs text-white/60">To</div>
+                      <div className="font-medium">{niceDate(toDate)}</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 mt-3">
+                    <Clock className="w-4 h-4 text-[#e81828]" />
+                    <div>
+                      <div className="text-xs text-white/60">
+                        Preferred time
+                      </div>
+                      <div className="font-medium">{preferredTime || "—"}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-lg bg-[#0f1111] border border-[#e81828]/10">
+                <h3 className="text-lg font-semibold text-[#e81828]">
+                  Contact & Car
+                </h3>
+                <div className="mt-3 text-white/80 space-y-1 text-sm">
+                  <div className="flex items-center gap-2">
+                    <Mail className="w-4 h-4 text-[#e81828]" />
+                    <div>
+                      <div className="text-xs text-white/60">Email</div>
+                      <div className="font-medium">{email}</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 mt-2">
+                    <Phone className="w-4 h-4 text-[#e81828]" />
+                    <div>
+                      <div className="text-xs text-white/60">Phone</div>
+                      <div className="font-medium">{phone}</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 mt-2">
+                    <MapPin className="w-4 h-4 text-[#e81828]" />
+                    <div>
+                      <div className="text-xs text-white/60">Address</div>
+                      <div className="font-medium">{address}</div>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 mt-2">
+                    <div className="text-xs text-white/60">Car Name</div>
+                    <div className="font-medium">
+                      {booking?.carId?.name || "—"}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 mt-2">
+                    <div className="text-xs text-white/60">
+                      Car License Plate
+                    </div>
+                    <div className="font-medium">
+                      {booking?.carId?.licensePlate || "—"}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 mt-2">
+                    <div className="text-xs text-white/60">Car Color</div>
+                    <div className="font-medium">
+                      {booking?.carId?.color || "—"}
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div className="p-4 rounded-lg bg-[#0f1111] border border-[#e81828]/10">
-              <h3 className="text-lg font-semibold text-[#e81828]">Summary</h3>
-              <div className="mt-4 space-y-3 text-sm text-white/80">
-                <div className="flex items-center justify-between">
-                  <div>Applied Discount</div>
-                  <div className="font-bold text-lg items-center rounded-full px-2 py-1 bg-[#e81828] flex justify-center">
-                    <PercentIcon className="w-4 h-4 " />
-                    {booking?.carId?.discountedPercentage} —
-                  </div>
+            {/* Add-ons & Price */}
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="p-4 rounded-lg bg-[#0f1111] border border-[#e81828]/10">
+                <h3 className="text-lg font-semibold text-[#e81828]">
+                  Add-ons
+                </h3>
+                <div className="mt-3 space-y-2 text-sm text-white/80">
+                  {Array.isArray(addons) && addons.length > 0 ? (
+                    addons.map((a) => (
+                      <div
+                        key={a._id || a.name}
+                        className="flex items-center justify-between"
+                      >
+                        <div>{a.name}</div>
+                        <div className="text-white/60">AED {a.price}</div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-white/60">No add-ons selected.</div>
+                  )}
                 </div>
-                <div className="flex items-center justify-between">
-                  <div>Base price</div>
-                  <div className="font-medium">AED {basePrice} —</div>
-                </div>
+              </div>
 
-                <div className="flex items-center justify-between">
-                  <div>Add-ons</div>
-                  <div className="font-medium">
-                    AED{" "}
-                    {Array.isArray(addons)
-                      ? addons.reduce((s, x) => s + (Number(x.price) || 0), 0)
-                      : 0}
+              <div className="p-4 rounded-lg bg-[#0f1111] border border-[#e81828]/10">
+                <h3 className="text-lg font-semibold text-[#e81828]">
+                  Summary
+                </h3>
+                <div className="mt-4 space-y-3 text-sm text-white/80">
+                  <div className="flex items-center justify-between">
+                    <div>Applied Discount</div>
+                    <div className="font-bold text-lg items-center rounded-full px-2 py-1 bg-[#e81828] flex justify-center">
+                      <PercentIcon className="w-4 h-4 " />
+                      {booking?.carId?.discountedPercentage} —
+                    </div>
                   </div>
-                </div>
+                  <div className="flex items-center justify-between">
+                    <div>Base price</div>
+                    <div className="font-medium">AED {basePrice} —</div>
+                  </div>
 
-                <div className="border-t border-white/6 pt-3 flex items-center justify-between font-semibold">
-                  <div>Total</div>
-                  <div>
-                    AED{" "}
-                    {/* If booking.total exists you can use it, otherwise compute simple */}
-                    {totalPrice ||
-                      (Array.isArray(addons)
+                  <div className="flex items-center justify-between">
+                    <div>Add-ons</div>
+                    <div className="font-medium">
+                      AED{" "}
+                      {Array.isArray(addons)
                         ? addons.reduce((s, x) => s + (Number(x.price) || 0), 0)
-                        : 0)}
+                        : 0}
+                    </div>
+                  </div>
+
+                  <div className="border-t border-white/6 pt-3 flex items-center justify-between font-semibold">
+                    <div>Total</div>
+                    <div>
+                      AED{" "}
+                      {/* If booking.total exists you can use it, otherwise compute simple */}
+                      {totalPrice ||
+                        (Array.isArray(addons)
+                          ? addons.reduce(
+                              (s, x) => s + (Number(x.price) || 0),
+                              0
+                            )
+                          : 0)}
+                    </div>
                   </div>
                 </div>
+
+                <div className="mt-4 flex gap-3">
+                  <button
+                    onClick={handleDownloadReceipt}
+                    className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-[#e81828] hover:bg-[#c51420] transition"
+                  >
+                    Download Receipt
+                  </button>
+
+                  <button
+                    onClick={() => router.push("/")}
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-[#e81828]/30 hover:bg-[#e81828]/10 transition"
+                  >
+                    Done
+                  </button>
+                </div>
               </div>
+            </div>
 
-              <div className="mt-4 flex gap-3">
-                <button
-                  onClick={handleDownloadReceipt}
-                  className="flex-1 inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-[#e81828] hover:bg-[#c51420] transition"
-                >
-                  Download Receipt
-                </button>
-
-                <button
-                  onClick={() => router.push("/")}
-                  className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-[#e81828]/30 hover:bg-[#e81828]/10 transition"
-                >
-                  Done
-                </button>
+            {/* Small footer */}
+            <div className="mt-6 text-xs text-white/50">
+              <div>
+                Need help? Contact our support at{" "}
+                <span className="text-[#e81828]">support@fleetx.example</span>{" "}
+                or call <span className="text-[#e81828]">+92 300 0000000</span>.
+              </div>
+              <div className="mt-2">
+                Booking ID <span className="font-medium">{bookingNumber}</span>{" "}
+                — please keep it safe.
               </div>
             </div>
-          </div>
-
-          {/* Small footer */}
-          <div className="mt-6 text-xs text-white/50">
-            <div>
-              Need help? Contact our support at{" "}
-              <span className="text-[#e81828]">support@fleetx.example</span> or
-              call <span className="text-[#e81828]">+92 300 0000000</span>.
-            </div>
-            <div className="mt-2">
-              Booking ID <span className="font-medium">{bookingNumber}</span> —
-              please keep it safe.
-            </div>
-          </div>
-        </motion.div>
+          </motion.div>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

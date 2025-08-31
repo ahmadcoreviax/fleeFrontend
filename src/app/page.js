@@ -1,4 +1,6 @@
+import LuxuryRentCTA from "./Components/Banner";
 import BrandsSection from "./Components/Brands";
+import SingleCarShowcase from "./Components/CarBanner";
 import FAQ from "./Components/FAQ";
 import FeaturedCars from "./Components/FeaturedCars";
 import Features from "./Components/Features";
@@ -22,11 +24,13 @@ export default function Page() {
         <BrandsSection />
         <FeaturedCars />
         <WhyChoose />
+        <SingleCarShowcase />
         <HowItWorks />
+        <LuxuryRentCTA />
         <Testimonials />
-        <PricingPlans />
         <FAQ />
         <FinalCTABanner />
+        <PricingPlans />
       </main>
       <Footer />
     </>

@@ -3,7 +3,7 @@ export default async function getReq(endpoint) {
     `${process.env.NEXT_PUBLIC_DOMAIN_URL}/${endpoint}`,
     {
       method: "GET",
-      credentials: "include",
+      // credentials: "include",
     }
   );
   let statusCode = request.status;

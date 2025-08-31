@@ -15,7 +15,7 @@ export default function AdminCarsPage() {
   const router = useRouter();
   const fetchCars = async () => {
     try {
-      const result = await getReq("api/getAllCars");
+      const result = await getReq("api/mng/getAllCarsForAdmin");
       if (result.statusCode == 200) {
         console.log(result.response);
         setCars(result.response);

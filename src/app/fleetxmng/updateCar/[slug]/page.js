@@ -166,9 +166,10 @@ export default function CarForm() {
       );
 
       setLoading(false);
-      if (res.status == 401 || res.status == 403) {
-        return router.push("/fleetxmng");
-      }
+      console.log(res);
+      // if (res.status == 401 || res.status == 403) {
+      //   return router.push("/fleetxmng");
+      // }
       if (!res.ok) {
         toast.error("Update failed");
         return;
