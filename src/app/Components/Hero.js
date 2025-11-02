@@ -39,8 +39,7 @@ export default function Hero() {
       <div
         className="absolute inset-0 -z-10"
         style={{
-          backgroundImage:
-            "url('https://images.unsplash.com/photo-1525609004556-c46c7d6cf023?q=80&w=2400')",
+          backgroundImage: "url(/mainBannerImg.webp)",
           backgroundSize: "cover",
           backgroundPosition: "center",
         }}

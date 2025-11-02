@@ -16,6 +16,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import getReq from "../Utilities/getReq";
+import BookingModal from "./BookingModal";
 
 /**
  * SingleCarShowcase
@@ -32,6 +33,8 @@ export default function SingleCarShowcase() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [imgIndex, setImgIndex] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedCar, setSelectedCar] = useState(null);
 
   useEffect(() => {
     let mounted = true;
@@ -281,16 +284,19 @@ export default function SingleCarShowcase() {
                   </div>
 
                   <div className="flex items-center gap-4">
-                    <Link
-                      href={`/book?car=${encodeURIComponent(car.slug)}`}
-                      className="inline-flex items-center gap-2 rounded-2xl bg-[#e81828] px-6 py-3 font-semibold shadow-lg hover:shadow-[#e81828]/40 transition-transform hover:-translate-y-0.5"
+                    <span
+                      className="inline-flex items-center gap-2 rounded-2xl bg-[#e81828] px-6 py-3 font-semibold shadow-lg hover:shadow-[#e81828]/40 transition-transform hover:-translate-y-0.5 cursor-pointer"
+                      onClick={() => {
+                        setIsModalOpen(true);
+                        setSelectedCar(car);
+                      }}
                     >
                       Book Now
                       <ArrowRight className="w-4 h-4" />
-                    </Link>
+                    </span>
 
                     <Link
-                      href={`/cars/${encodeURIComponent(car.slug)}`}
+                      href={`/viewCar/${encodeURIComponent(car.slug)}`}
                       className="inline-flex items-center gap-2 rounded-2xl bg-white/5 px-5 py-3 font-medium hover:bg-white/10 transition"
                     >
                       View Details
@@ -344,6 +350,11 @@ export default function SingleCarShowcase() {
             </motion.div>
           </div>
         )}
+        <BookingModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          car={selectedCar}
+        />
       </div>
 
       {/* subtle bottom glow */}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { Calendar, Check, SlidersHorizontal, ChevronDown } from "lucide-react";
@@ -38,63 +38,77 @@ export default function AllCars() {
   });
   let queryCategory = searchParams?.get("category");
   useEffect(() => {
-    setFilters({ ...filters, category: queryCategory });
+    if (queryCategory) {
+      setFilters((prev) => ({ ...prev, category: queryCategory }));
+    }
+    // setFilters({ ...filters, category: queryCategory });
   }, [queryCategory]);
 
-  async function fetchData() {
+  async function fetchCars() {
     try {
-      // Cars, Brands, Categories alag alag fetch
       let carRes = await getReq(
         `api/getAllCars?page=${currentPage}&limit=${carsPerPage}`
       );
-      let brandRes = await getReq("api/mng/getAllBrands");
-      let catRes = await getReq("api/mng/getAllCategories");
-
       setCars(carRes.response?.cars || []);
       setTotalPages(carRes.response?.totalPages || 1);
-      setBrands(brandRes.response?.brands || []);
-      setCategories(catRes.response?.categories || []);
     } catch (error) {
-      console.log("error fetching data", error);
+      console.log("error fetching data in all Cars page", error);
     } finally {
       setLoading(false); // stop loading
     }
   }
+  async function fetchAllData() {
+    try {
+      let brandRes = await getReq("api/mng/getAllBrands");
+      let catRes = await getReq("api/mng/getAllCategories");
 
+      setBrands(brandRes.response?.brands || []);
+      setCategories(catRes.response?.categories || []);
+    } catch (error) {
+      console.log("error fetching data in all Cars page", error);
+    } finally {
+      setLoading(false); // stop loading
+    }
+  }
   useEffect(() => {
-    fetchData();
+    fetchCars();
   }, [currentPage]);
+  useEffect(() => {
+    fetchAllData();
+  }, []);
 
   // Filter handler
-  const filteredCars = cars.filter((car) => {
-    const {
-      brand,
-      category,
-      minDay,
-      maxDay,
-      minWeek,
-      maxWeek,
-      minMonth,
-      maxMonth,
-    } = filters;
+  const filteredCars = useMemo(() => {
+    return cars.filter((car) => {
+      const {
+        brand,
+        category,
+        minDay,
+        maxDay,
+        minWeek,
+        maxWeek,
+        minMonth,
+        maxMonth,
+      } = filters;
 
-    const brandMatch = !brand || car.brand === brand;
-    const categoryMatch = !category || car.category === category;
+      const brandMatch = !brand || car.brand === brand;
+      const categoryMatch = !category || car.category === category;
 
-    const dayMatch =
-      (!minDay || car.perDayCharges >= parseInt(minDay)) &&
-      (!maxDay || car.perDayCharges <= parseInt(maxDay));
+      const dayMatch =
+        (!minDay || car.perDayCharges >= parseInt(minDay)) &&
+        (!maxDay || car.perDayCharges <= parseInt(maxDay));
 
-    const weekMatch =
-      (!minWeek || car.perWeekCharges >= parseInt(minWeek)) &&
-      (!maxWeek || car.perWeekCharges <= parseInt(maxWeek));
+      const weekMatch =
+        (!minWeek || car.perWeekCharges >= parseInt(minWeek)) &&
+        (!maxWeek || car.perWeekCharges <= parseInt(maxWeek));
 
-    const monthMatch =
-      (!minMonth || car.perMonthCharges >= parseInt(minMonth)) &&
-      (!maxMonth || car.perMonthCharges <= parseInt(maxMonth));
+      const monthMatch =
+        (!minMonth || car.perMonthCharges >= parseInt(minMonth)) &&
+        (!maxMonth || car.perMonthCharges <= parseInt(maxMonth));
 
-    return brandMatch && categoryMatch && dayMatch && weekMatch && monthMatch;
-  });
+      return brandMatch && categoryMatch && dayMatch && weekMatch && monthMatch;
+    });
+  }, [cars, filters]);
   const SkeletonCard = () => (
     <div className="rounded-xl overflow-hidden bg-white/5 border border-white/10 animate-pulse">
       <div className="h-48 bg-white/10" />
@@ -300,7 +314,7 @@ export default function AllCars() {
                       initial={{ opacity: 0, y: 30 }}
                       whileInView={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.05 }}
-                      viewport={{ once: true }}
+                      viewport={{ once: false }}
                       className="rounded-xl overflow-hidden bg-white/5 border border-white/10 hover:border-[#e81828]/40 hover:shadow-lg hover:shadow-[#e81828]/20 transition"
                     >
                       {/* Car Image */}
@@ -414,11 +428,6 @@ export default function AllCars() {
                             Book Now
                           </span>
 
-                          <BookingModal
-                            isOpen={isModalOpen}
-                            onClose={() => setIsModalOpen(false)}
-                            car={selectedCar}
-                          />
                           <a
                             href={`/viewCar/${car?.slug}`}
                             className="flex-1 text-center py-2 rounded-lg border border-white/20 hover:bg-white/10"
@@ -465,6 +474,11 @@ export default function AllCars() {
                 </button>
               </div>
             )}
+            <BookingModal
+              isOpen={isModalOpen}
+              onClose={() => setIsModalOpen(false)}
+              car={selectedCar}
+            />
           </div>
         </div>
       </section>

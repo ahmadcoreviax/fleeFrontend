@@ -9,24 +9,21 @@ const reviews = [
     name: "Ahsan R.",
     role: "Business Traveler",
     text: "Booked in minutes and car was spotless. Pricing is honest. 10/10 will rent again!",
-    avatar:
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=400",
+
     rating: 5,
   },
   {
     name: "Mehak K.",
     role: "Photographer",
     text: "Flexible pickup saved my shoot. Support team is super responsive.",
-    avatar:
-      "https://images.unsplash.com/photo-1547425260-76bcadfb4f2c?q=80&w=400",
+
     rating: 5,
   },
   {
     name: "Hassan I.",
     role: "Weekend Trip",
     text: "Great rates for the Sportage. Smooth process from booking to return.",
-    avatar:
-      "https://images.unsplash.com/photo-1547425260-9fdb5e2b97a2?q=80&w=400",
+
     rating: 4,
   },
 ];
@@ -60,14 +57,6 @@ export default function Testimonials() {
                 <Quote className="h-6 w-6 text-[#e81828]" />
                 <p className="mt-3 text-white/80">{r.text}</p>
                 <div className="mt-5 flex items-center gap-3">
-                  <div className="relative h-10 w-10 rounded-full overflow-hidden border border-white/10">
-                    <Image
-                      src={r.avatar}
-                      alt={r.name}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
                   <div>
                     <div className="font-semibold">{r.name}</div>
                     <div className="text-xs text-white/60">{r.role}</div>

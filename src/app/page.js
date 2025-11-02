@@ -30,7 +30,7 @@ export default function Page() {
         <Testimonials />
         <FAQ />
         <FinalCTABanner />
-        <PricingPlans />
+        {/* <PricingPlans /> */}
       </main>
       <Footer />
     </>

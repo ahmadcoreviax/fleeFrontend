@@ -14,7 +14,7 @@ export default function AboutUs() {
         {/* Hero Banner with Background Image */}
         <section className="relative h-[70vh] flex items-center justify-center">
           <Image
-            src="https://images.unsplash.com/photo-1614200179396-2bdb77ebf81b?q=80&w=1032&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            src="/aboutBg.webp"
             alt="Luxury Car Banner"
             fill
             className="object-cover opacity-40"
@@ -69,14 +69,14 @@ export default function AboutUs() {
             className="grid grid-cols-2 gap-4"
           >
             <Image
-              src="https://images.unsplash.com/photo-1622893288761-823ba60f17a6?q=80&w=928&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              src="/aboutCol1.webp"
               alt="Car 1"
               width={400}
               height={300}
               className="rounded-2xl shadow-2xl"
             />
             <Image
-              src="https://images.unsplash.com/photo-1511919884226-fd3cad34687c?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              src="/aboutCol2.webp"
               alt="Car 2"
               width={400}
               height={300}
@@ -163,7 +163,7 @@ export default function AboutUs() {
             className="flex justify-center"
           >
             <Image
-              src="https://images.unsplash.com/photo-1508974239320-0a029497e820?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              src="/aboutMain.webp"
               alt="Vision Car"
               width={500}
               height={350}

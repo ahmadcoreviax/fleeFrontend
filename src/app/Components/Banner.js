@@ -11,7 +11,7 @@ export default function LuxuryCTA() {
       {/* Background Image */}
       <div className="absolute inset-0">
         <Image
-          src="https://images.unsplash.com/photo-1651561028053-517dd21d5d89?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTV8fGx1eHVyeSUyMGNhcnxlbnwwfDB8MHx8fDA%3D"
+          src="/ctaBg.webp"
           alt="Luxury Car"
           fill
           className="object-cover opacity-40"
@@ -61,14 +61,14 @@ export default function LuxuryCTA() {
           className="mt-10 flex flex-col sm:flex-row gap-4"
         >
           <Link
-            href="#book"
+            href="/allCars"
             className="px-8 py-4 rounded-2xl bg-[#e81828] text-white font-semibold text-lg flex items-center justify-center gap-2 hover:bg-[#c51422] transition-all shadow-lg hover:shadow-[#e81828]/40"
           >
             Book Your Ride <ArrowRight className="w-5 h-5" />
           </Link>
 
           <Link
-            href="#fleet"
+            href="/allCars"
             className="px-8 py-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 text-white font-semibold text-lg flex items-center justify-center gap-2 hover:bg-white/20 transition-all shadow-lg"
           >
             <Car className="w-5 h-5" /> Explore Fleet
